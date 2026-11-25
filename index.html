@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mascota Virtual · Caniche y Gato</title>
+<style>
+:root{--ink:#161a33;--card:#232850;--line:#3a4180;--sun:#ffc857;--pink:#ff7a98;--mint:#7be0b4;--txt:#f4f1ff;--mut:#aeb4e0}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#151832;color:var(--txt);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:10px 12px;min-height:44px;transition:transform .12s,background .12s}
+button:hover{background:#2d3366}button:active{transform:scale(.96)}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+button.on{background:var(--sun);color:#2a2000;border-color:#fff3c4}
+header{display:flex;gap:8px;align-items:center;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+header{flex-wrap:wrap}header b{flex:1;min-width:120px;font-size:20px;letter-spacing:.3px}
+#coins{background:#0005;border:2px solid var(--sun);border-radius:99px;padding:6px 12px;font-weight:700}
+main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:14px;padding:0 14px 20px;max-width:1100px;margin:0 auto}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+section{background:#1b1f40;border:2px solid var(--line);border-radius:22px;padding:12px}
+.cv{padding:10px;border-radius:999px;background:linear-gradient(145deg,#6a70b8,#2c3068 55%,#1b1e44);box-shadow:inset 2px 2px 0 #aab0ee,inset -3px -3px 0 #0f1230,0 5px 0 #0b0d24,0 12px 22px #0007}
+.win{position:relative;border-radius:999px;overflow:hidden;background:#000;box-shadow:0 0 0 3px #0d0f26}
+.tools{display:flex;justify-content:flex-end;margin-top:8px}.tools button{font-size:12px;padding:4px 12px;min-height:32px;border-radius:99px;opacity:.9}
+.ver{color:var(--mut);font-size:11px;border:1px solid var(--line);border-radius:99px;padding:2px 8px;white-space:nowrap}
+canvas{display:block;width:100%;height:auto;touch-action:pan-y;image-rendering:pixelated}
+#bub{position:absolute;left:50%;top:7%;transform:translateX(-50%);max-width:62%;background:#fffdf5;color:#2b2540;border-radius:18px;padding:8px 14px;font-weight:700;font-size:15px;text-align:center;opacity:0;transition:opacity .25s;pointer-events:none}
+#bub.show{opacity:1}
+#stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin:12px 0}
+.st{font-size:13px}.st .bar{height:12px;border-radius:9px;background:#0007;overflow:hidden;margin-top:3px;border:1px solid var(--line)}
+.st .bar i{display:block;height:100%;border-radius:9px;transition:width .4s}
+#acts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:480px){#acts{grid-template-columns:1fr 1fr}}
+#foods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+#foods[hidden]{display:none}
+#foods button{font-size:13px}#foods small{display:block;color:var(--mut)}
+.hint{color:var(--mut);font-size:12px;margin:10px 2px 0}
+#chat{display:flex;flex-direction:column;gap:8px}
+#msgs{height:340px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:4px}
+.m{max-width:86%;padding:8px 12px;border-radius:16px;font-size:14px;line-height:1.45;white-space:pre-wrap}
+.m.u{align-self:flex-end;background:var(--sun);color:#2a2000;border-bottom-right-radius:4px}
+.m.p{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
+#chips{display:flex;flex-wrap:wrap;gap:6px}#chips button{font-size:12px;padding:6px 10px;min-height:34px;border-radius:99px}
+#cf{display:flex;gap:6px}#ci{flex:1;min-width:0;background:#0006;border:2px solid var(--line);border-radius:14px;padding:10px 12px}
+details{font-size:13px;color:var(--mut)}details input{width:100%;margin:4px 0;background:#0006;border:2px solid var(--line);border-radius:10px;padding:8px}
+.vet{font-size:12px;color:var(--mint);margin:0}
+.ov{position:fixed;inset:0;background:#0b0e24ee;display:flex;align-items:center;justify-content:center;padding:14px;z-index:9;overflow:auto}
+.ov[hidden]{display:none}
+.box{max-width:520px;width:100%;background:var(--card);border:3px solid var(--sun);border-radius:24px;padding:20px;text-align:center}
+.box h1{margin:0 0 4px;font-size:26px}.box p{color:var(--mut);margin:4px 0 12px}
+.row{display:flex;gap:10px;justify-content:center;margin:10px 0}.row button{flex:1;font-size:16px}
+.row.big button{font-size:44px;padding:12px;line-height:1.1}.row.big small{display:block;font-size:14px}
+#nm{width:100%;background:#0006;border:2px solid var(--line);border-radius:14px;padding:12px;text-align:center;font-size:18px}
+#go{width:100%;font-size:20px;margin-top:10px;background:var(--sun);color:#2a2000;border-color:#fff}
+.cred{font-size:12px;color:var(--mut);line-height:1.5;margin:12px 0 0;text-align:center}.cred a,.pg a{color:var(--sun)}
+#infob{width:100%;margin-top:8px;font-size:14px}
+footer.cred{padding:0 14px calc(18px + env(safe-area-inset-bottom,0px))}footer.cred button{margin-top:8px;font-size:13px;min-height:36px;border-radius:99px;padding:6px 14px}
+#info{z-index:12;align-items:flex-start}
+.pg{max-width:760px;width:100%;margin:auto;background:var(--card);border:3px solid var(--sun);border-radius:24px;padding:20px;text-align:left;line-height:1.55}
+.pg h1{font-size:24px;margin:0 0 4px}.pg h2{font-size:18px;color:var(--sun);margin:20px 0 6px}.pg p,.pg li{color:var(--txt);font-size:14px}.pg ul,.pg ol{padding-left:20px;margin:6px 0}.pg li{margin:4px 0}
+#ptxt{width:100%;height:300px;resize:vertical;background:#0008;border:2px solid var(--line);border-radius:14px;padding:12px;font:13px/1.5 ui-monospace,Consolas,monospace;color:var(--txt)}
+.pgb{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.pgb button,.pgb a{flex:1;min-width:150px;text-align:center;text-decoration:none;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:11px 12px;color:var(--txt);font-size:14px}.pgb .pri{background:var(--sun);color:#2a2000;border-color:#fff3c4}
+.note{background:#0005;border-left:4px solid var(--mint);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--mut)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<header><b id="ttl">🐾 Mascota Virtual</b><small class="ver">v2.0 · pixel</small><span id="coins">⭐ 0</span><button id="mute" aria-label="Sonido">🔊</button><button id="newp">Nueva</button><button id="rst">Reiniciar</button></header>
+<main>
+<section id="scene">
+ <div class="cv"><div class="win"><canvas id="c" width="960" height="384" aria-label="Habitación de tu mascota"></canvas><div id="bub"></div></div></div>
+ <div class="tools"><button id="lensb" type="button" title="Lupa (tecla L)">🔍 Lupa</button></div>
+ <div id="stats"></div>
+ <div id="acts"><button data-a="eat">🍽️ Comer</button><button data-a="sleep" id="bsl">😴 Dormir</button><button data-a="dance">💃 Bailar</button><button data-a="sing">🎤 Cantar</button></div>
+ <div id="foods" hidden></div>
+ <p class="hint">Tocá la cabeza, la panza o la cola. Teclas: C comer · S dormir · B bailar · N cantar · L lupa (arrastrala o dejá que viaje sola). Cada juego y mimo suma estrellas ⭐.</p>
+</section>
+<section id="chat">
+ <div id="msgs" aria-live="polite"></div>
+ <div id="chips"></div>
+ <form id="cf"><input id="ci" placeholder="Preguntame sobre perros y gatos…" autocomplete="off" maxlength="200"><button>Enviar</button></form>
+ <details><summary>⚙️ Conectar una API (opcional)</summary>
+  <input id="au" placeholder="URL compatible con OpenAI (…/v1/chat/completions)"><input id="ak" type="password" placeholder="API key"><input id="am" placeholder="Modelo">
+  Sin API, el chat funciona 100 % offline con la base de conocimiento integrada.</details>
+ <p class="vet">🩺 Ante dudas médicas o urgencias de una mascota real, consultá siempre a un veterinario.</p>
+</section>
+</main>
+<footer class="cred">Creado por <a href="https://www.instagram.com/didactica_aumentada3.0/" target="_blank" rel="noopener noreferrer">@didactica_aumentada3.0</a><br>Prof: Marquez Camila Araceli<br><button id="infob2" type="button">📚 Prompt para crear este juego y educación con IA</button></footer>
+<div class="ov" id="setup" hidden><div class="box">
+ <h1>¡Elegí tu mascota!</h1><p>Podés crear una nueva cuando quieras.</p>
+ <div class="row big" id="spRow"><button data-sp="dog">🐩<small>Caniche negro</small></button><button data-sp="cat">🐱<small>Gato</small></button></div>
+ <div class="row" id="gRow"><button data-g="m"></button><button data-g="f"></button></div>
+ <input id="nm" maxlength="14" placeholder="Nombre">
+ <button id="go">Comenzar</button><button id="cancel" style="margin-top:8px;width:100%" hidden>Volver a mi mascota</button>
+ <button id="infob" type="button">📚 Prompt para crear este juego y educación con IA</button>
+ <p class="cred">Creado por <a href="https://www.instagram.com/didactica_aumentada3.0/" target="_blank" rel="noopener noreferrer">@didactica_aumentada3.0</a><br>Prof: Marquez Camila Araceli</p>
+</div></div>
+<div class="ov" id="info" hidden role="dialog" aria-modal="true" aria-label="Prompt y educación con IA"><div class="pg">
+ <h1>📚 Crear juegos con IA</h1>
+ <p>Esta subpágina explica cómo pedirle a Claude que cree este juego y qué se gana en educación al hacerlo.</p>
+ <h2>1. Prompt para crear el juego</h2>
+ <ol><li>Abrí <a href="https://claude.ai/chat" target="_blank" rel="noopener noreferrer">claude.ai/chat</a> e iniciá una conversación nueva.</li><li>Copiá el prompt y pegalo en el chat.</li><li>Guardá el código resultante como <b>mascota-virtual.html</b> y abrilo en el navegador.</li><li>Iterá: pedí cambios en la conversación (colores, personajes, preguntas del chat).</li></ol>
+ <textarea id="ptxt" readonly aria-label="Prompt para Claude">Creá un juego de mascota virtual en un único archivo HTML autocontenido (HTML + CSS + JS, sin librerías externas), en español, responsive para escritorio y móvil, sin errores en consola y que respete prefers-reduced-motion.
+
+1. INICIO: pantalla para elegir Caniche negro o Gato, género (Perro/Perra o Gato/Gata) y nombre. Guardado automático en localStorage y botones Nueva y Reiniciar.
+2. ESTADÍSTICAS: Hambre, Energía, Felicidad y Vínculo (barras de 0 a 100 que cambian con el tiempo) y estrellas como moneda del juego.
+3. ACCIONES: Comer (menú de comidas con precios en estrellas y efectos), Dormir/Despertar, Bailar y Cantar. Bailar, cantar y los mimos dan estrellas. Atajos de teclado C, S, B y N.
+4. INTERACCIÓN: tocar o hacer clic en la cabeza, la panza y la cola da reacciones distintas, detectadas según la posición actual de la mascota.
+5. SONIDO: efectos con Web Audio API (sin archivos de audio) y botón para silenciar.
+6. ESTÉTICA: pixel art nítido (imageSmoothingEnabled = false) dentro de una ventana horizontal en forma de cápsula con borde biselado, sobre un fondo sobrio. Encabezado con título, contador de estrellas y un indicador de versión discreto.
+7. HABITACIÓN: planta en maceta, estantería con libros de colores, ventana amplia con ciudad al fondo, ciclo día/noche (noche estrellada con luna, amanecer y día), alfombra, lámpara cálida, mueble con TV y puerta. La mascota camina, come en su plato, duerme en la alfombra de noche, baila con saltos y canta con notas musicales.
+8. LUPA: lente ovalada con borde brillante que amplía y deforma suavemente la escena. Modos: automática, seguir cursor/dedo, pausada y apagada, con un botón discreto (tecla L). También se puede arrastrar.
+9. CHAT: panel con chips de preguntas rápidas, respuestas sin conexión sobre perros y gatos (comidas tóxicas, lenguaje corporal, sueño, juego, higiene, salud, curiosidades), configuración opcional de API (URL, key y modelo) y aviso de consultar a un veterinario.
+10. PANTALLA DE INICIO CON CRÉDITOS: "Creado por @didactica_aumentada3.0 - Prof: Marquez Camila Araceli".
+
+Entregá el código completo en un solo bloque, listo para guardar como .html y abrir en el navegador.</textarea>
+ <div class="pgb"><button id="pcopy" class="pri" type="button">📋 Copiar prompt</button><a href="https://claude.ai/chat" target="_blank" rel="noopener noreferrer">Abrir claude.ai/chat ↗</a></div>
+ <p class="note">Los resultados pueden variar en cada intento. Si algo falla, pegá el error en el chat y pedí que lo corrija.</p>
+ <h2>2. ¿Qué se gana en educación al crear juegos con IA?</h2>
+ <ul>
+ <li><b>Pensamiento computacional:</b> descomponer un juego en reglas, estados y acciones ayuda a razonar como programador, sin escribir todo el código a mano.</li>
+ <li><b>Comunicación precisa:</b> un buen prompt exige redactar con claridad, ordenar ideas y definir criterios, y eso refuerza la expresión escrita.</li>
+ <li><b>Aprendizaje por proyectos:</b> el estudiantado ve un resultado jugable, prueba, detecta errores y mejora, así que aprende iterando.</li>
+ <li><b>Creatividad y motivación:</b> pasar de usuario a creador aumenta el compromiso; la gamificación hace más cercano el contenido.</li>
+ <li><b>Alfabetización en IA:</b> se aprende a usar la IA con criterio, a revisar lo que produce y a entender sus límites.</li>
+ <li><b>Recursos a medida para docentes:</b> permite prototipar rápido materiales didácticos adaptados a cada grupo, tema o necesidad, sin depender de software cerrado.</li>
+ <li><b>Interdisciplinariedad:</b> un mismo juego une lengua, ciencias naturales (cuidado animal), arte, música y tecnología.</li>
+ </ul>
+ <p class="note">Buenas prácticas: revisar siempre el contenido y el código generados, no cargar datos personales del estudiantado en el chat y acompañar el uso con la guía docente. Este juego no reemplaza a un veterinario.</p>
+ <p class="cred">Creado por <a href="https://www.instagram.com/didactica_aumentada3.0/" target="_blank" rel="noopener noreferrer">@didactica_aumentada3.0</a><br>Prof: Marquez Camila Araceli</p>
+ <button id="iclose" type="button" style="width:100%;margin-top:10px">Cerrar</button>
+</div></div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s),KEY='mascota-virtual-v1',cl=v=>Math.max(0,Math.min(100,v));
+let S=null,muted=false,actx=null,mode={n:'idle',u:0},parts=[],lastBeat=0,lastNote=0,touches=0;
+try{S=JSON.parse(localStorage.getItem(KEY));muted=localStorage.getItem(KEY+'m')==='1'}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const A=()=>S.g==='f'?'a':'o';
+const SP=()=>S.sp==='dog'?['Perro','Perra']:['Gato','Gata'];
+const FOODS={dog:[['🥣','Croquetas',0,25,3],['🦴','Huesito masticable',3,30,12],['🍗','Pollo cocido',5,45,15]],cat:[['🥣','Pienso',0,25,3],['🐟','Paté de pescado',3,35,12],['🍤','Premio de salmón',5,45,15]]};
+/* ---------- Sonido ---------- */
+function ac(){if(!actx){try{actx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(actx&&actx.state==='suspended')actx.resume();return actx}
+function tone(f,d,type,v,at,f2){if(muted)return;const c=ac();if(!c)return;const t=c.currentTime+(at||0),o=c.createOscillator(),g=c.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v||.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d+.05)}
+const sfx={click:()=>tone(820,.05,'square',.04),
+ voice:()=>S.sp==='dog'?(tone(430,.13,'sawtooth',.1,0,230),tone(390,.13,'sawtooth',.1,.18,210)):(tone(520,.35,'triangle',.12,0,860),tone(860,.3,'triangle',.1,.33,440)),
+ eat:()=>[0,.12,.24].forEach(a=>tone(180+Math.random()*80,.06,'square',.07,a)),
+ happy:()=>[660,880,1100].forEach((f,i)=>tone(f,.12,'sine',.08,i*.08)),
+ kick:()=>{tone(130,.18,'sine',.25,0,50);tone(5000,.03,'square',.02,.12)},
+ note:i=>tone([523,587,659,784,880,988][i%6],.3,'triangle',.12)};
+/* ---------- Estado ---------- */
+const NAMES={dog:{f:'Lola',m:'Bruno'},cat:{f:'Misha',m:'Simón'}};
+function newPet(sp,g,name){S={sp,g,name:name||NAMES[sp][g],hun:80,ene:80,fun:80,bond:20,coins:S?S.coins:5,sleep:false,hist:[],cfg:S&&S.cfg||{}};save();msgs();say('¡Hola! Soy '+S.name+' 💛',3000);ui()}
+function setMode(n,sec){mode={n,u:performance.now()/1000+sec}}
+function say(t,ms){const b=$('#bub');b.textContent=t;b.classList.add('show');clearTimeout(say.t);say.t=setTimeout(()=>b.classList.remove('show'),ms||2600)}
+function burst(txt,n,x,y,vy){for(let i=0;i<n;i++)parts.push({t:PK[txt]||'h',x:x+(Math.random()-.5)*8,y:y,vx:(Math.random()-.5)*9,vy:(vy||-60-Math.random()*30)/4.5,l:1.4})}
+function coin(n){S.coins+=n;ui()}
+function tick(){if(!S)return;if(S.sleep){S.ene=cl(S.ene+1.3);S.hun=cl(S.hun-.08);if(S.ene>=100){S.sleep=false;say('¡Qué buena siesta! ☀️')}}
+ else{S.hun=cl(S.hun-.22);S.ene=cl(S.ene-.12);S.fun=cl(S.fun-.17)}
+ if(S.hun<20&&!S.sleep&&Math.random()<.05)say('Tengo hambre… 🥺');if(S.hun<8)S.fun=cl(S.fun-.3);
+ if(S.hun>50&&S.fun>50)S.bond=cl(S.bond+.03);ui();if(Math.random()<.1)save()}
+function ui(){if(!S)return;$('#ttl').textContent=(S.sp==='dog'?'🐩 ':'🐱 ')+S.name;$('#coins').textContent='⭐ '+S.coins;$('#mute').textContent=muted?'🔇':'🔊';
+ const rows=[['hun','🍖','Hambre','#ff9f43'],['ene','⚡','Energía','#7be0b4'],['fun','😄','Felicidad','#ffc857'],['bond','💞','Vínculo','#ff7a98']];
+ $('#stats').innerHTML=rows.map(r=>`<div class="st">${r[1]} ${r[2]} <b>${Math.round(S[r[0]])}</b><div class="bar"><i style="width:${S[r[0]]}%;background:${r[3]}"></i></div></div>`).join('');
+ $('#bsl').textContent=S.sleep?'☀️ Despertar':'😴 Dormir'}
+/* ---------- Acciones ---------- */
+function busy(){if(S.sleep){say('Shh… está durmiendo 😴');return true}return false}
+function showFoods(){if(busy())return;const f=$('#foods');if(!f.hidden){f.hidden=true;return}
+ f.innerHTML=FOODS[S.sp].map((x,i)=>`<button data-f="${i}">${x[0]} ${x[1]}<small>${x[2]?'⭐ '+x[2]:'Gratis'}</small></button>`).join('');f.hidden=false}
+function feed(i){const x=FOODS[S.sp][i];if(S.coins<x[2]){say('Faltan estrellas ⭐ para esto. ¡Jugá un rato!');return}
+ if(S.hun>95){say('¡Estoy llen'+A()+'! 😅');return}
+ S.coins-=x[2];S.hun=cl(S.hun+x[3]);S.fun=cl(S.fun+x[4]);S.bond=cl(S.bond+1);setMode('eat',2.2);sfx.eat();say('¡Ñam ñam! '+x[0]);$('#foods').hidden=true;ui();save()}
+function sleepT(){$('#foods').hidden=true;S.sleep=!S.sleep;sfx.click();say(S.sleep?'Buenas noches… 🌙':'¡Buen día! ☀️');if(!S.sleep)mode={n:'idle',u:0};ui();save()}
+function dance(){if(busy())return;if(S.ene<10){say('Estoy muy cansad'+A()+'…');return}setMode('dance',5);S.fun=cl(S.fun+20);S.ene=cl(S.ene-8);S.bond=cl(S.bond+1);coin(1);say('¡A bailar! 🎶');save()}
+function sing(){if(busy())return;setMode('sing',4.2);S.fun=cl(S.fun+15);S.bond=cl(S.bond+2);coin(1);say(S.sp==='dog'?'¡Auuuu~ 🎤':'¡Miaaauu~ 🎤');save()}
+function touch(x,y){const z=zoneAt(x,y);if(!z)return;if(S.sleep){say('Zzz… 💤');return}
+ touches++;if(touches%5===0)coin(1);S.bond=cl(S.bond+1.2);S.fun=cl(S.fun+2);
+ if(z==='head'){setMode('pet',1.6);say('¡Me encantan los mimos! 💕');burst('❤',5,x,y);sfx.happy()}
+ else if(z==='tail'){setMode('wag',1.6);say('¡Mi cola! 😆');sfx.click()}
+ else if(S.sp==='cat'&&Math.random()<.3){say('¡Cuidado! La panza es una trampa 😼');sfx.voice()}
+ else{setMode('pet',1.6);say(S.sp==='dog'?'¡Cosquillas! 🤭':'Prrr… 😻');burst('❤',4,x,y);sfx.happy()}
+ ui()}
+/* ---------- Pixel art: habitación, mascota y lupa ---------- */
+const W=320,H=128,SC=3,FY=114,cv=$('#c'),ctx=cv.getContext('2d'),off=document.createElement('canvas');
+off.width=W;off.height=H;const b=off.getContext('2d');
+const MQ=matchMedia('(prefers-reduced-motion: reduce)');let rm=MQ.matches;
+if(MQ.addEventListener)MQ.addEventListener('change',e=>rm=e.matches);
+const R=(x,y,w,h,c)=>{b.fillStyle=c;b.fillRect(Math.round(x),Math.round(y),w,h)};
+const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),lerp=(a,c,k)=>a.map((v,i)=>v+(c[i]-v)*k),css=a=>'rgb('+a.map(Math.round).join(',')+')';
+const SKY={n:[rgb('#0b1030'),rgb('#2a3a78')],d:[rgb('#5fbfff'),rgb('#dff5ff')],w:[rgb('#ff9a6b'),rgb('#ffdca0')]};
+const ell=(cx,cy,rx,ry,c)=>{for(let j=-ry;j<=ry;j++){const w=Math.floor(rx*Math.sqrt(1-j*j/(ry*ry+.01)));R(cx-w,cy+j,2*w+1,1,c)}};
+const SPR={n:['..###','..#..','..#..','..#..','###..','###..'],h:['.##.##.','#######','#######','.#####.','..###..','...#...'],z:['#####','...#.','..#..','.#...','#####'],c:['##','##']},
+ SCOL={n:'#ffc857',h:'#ff7a98',z:'#ffffff',c:'#c8905a'},PK={'♪':'n','❤':'h','Z':'z','•':'c'},BK=['#e0524f','#4f86e0','#f2c14e','#5fbf7a','#b068d8','#f2f2f2','#ff8c42'];
+const spr=(k,x,y)=>SPR[k].forEach((r,j)=>{for(let i=0;i<r.length;i++)if(r[i]==='#')R(x+i,y+j,1,1,SCOL[k])});
+const PET={x:150,tx:150,dir:1,y:FY,hx:16,hy:-26,lying:false,wt:0,walk:false};
+let sk=1;const L={x:480,y:190,rx:96,ry:70,m:'auto',tx:480,ty:190},LMODES=['auto','seguir','pausa','off'],LNAME={auto:'automática',seguir:'sigue el cursor',pausa:'pausada',off:'apagada'},LZ=k=>1.25+(1-k)*1.15;
+function setLens(m){L.m=m;const e=$('#lensb');e.textContent='🔍 Lupa: '+LNAME[m];e.classList.toggle('on',m!=='off')}
+/* zonas táctiles según la posición actual (coords de escena 320x128) */
+function zoneAt(x,y){const hx=PET.x+PET.dir*PET.hx,hy=PET.y+PET.hy;
+ if(Math.hypot(x-hx,y-hy)<10)return'head';
+ if(Math.hypot(x-(PET.x-PET.dir*20),y-(PET.y-(PET.lying?8:26)))<8)return'tail';
+ const ly=PET.lying;if(((x-PET.x)/21)**2+((y-(PET.y-(ly?7:15)))/(ly?8:12))**2<=1)return'body';return null}
+function room(t,m){const dz=m==='dance';
+ R(0,0,W,96,dz?'hsl('+(t*50%360)+',35%,45%)':'#cdb892');for(let x=0;x<W;x+=8)R(x,0,2,96,'rgba(0,0,0,.06)');
+ R(0,92,W,4,'#6b4a33');R(0,92,W,1,'#8a6347');R(0,96,W,32,'#9a6a43');
+ for(let r=0;r<4;r++){R(0,96+r*8,W,1,'#7d5535');for(let x=(r%2)*20;x<W;x+=40)R(x,96+r*8,1,8,'#7d5535')}
+ ell(150,115,72,10,'#6b2233');ell(150,115,68,8,'#e3b06a');ell(150,115,63,7,'#b5384f');ell(150,115,50,4,'#d9a05b');ell(150,115,42,2,'#b5384f');
+ R(54,18,50,56,'#6b4a33');R(56,20,46,52,'#2f2118');
+ [35,51,70].forEach((by,r)=>{R(56,by,46,2,'#6b4a33');let x=57,i=0;while(x<99){const w=2+(i*3+r)%3,hh=7+(i*5+r*3)%7;R(x,by-hh,w,hh,BK[(i+r*2)%7]);R(x,by-hh,1,hh,'rgba(255,255,255,.25)');x+=w+(i%4===3?2:0);i++}});
+ const sw=rm?0:Math.round(Math.sin(t*1.3));R(36,76,2,12,'#2f7a42');
+ [[-9,-6],[-5,-12],[-1,-16],[3,-11],[6,-7],[-3,-8]].forEach(([dx,dy],i)=>R(35+dx+(dy<-10?sw:0),88+dy,4,3,i%2?'#3f9a52':'#2f7a42'));
+ R(30,88,12,10,'#b5603a');R(29,86,14,3,'#cf7a4c');
+ R(271,26,28,72,'#4a3022');R(273,28,24,70,'#8a5a3a');R(276,32,18,24,'#74492d');R(276,60,18,34,'#74492d');R(277,33,16,1,'#a87650');R(291,64,3,3,'#f5d36a');R(273,97,24,1,'#ffe29a');
+ R(221,79,42,3,'#7a5538');R(222,82,40,16,'#5b3d2a');R(225,85,16,10,'#4a3022');R(243,85,16,10,'#4a3022');R(226,98,3,2,'#3a281c');R(255,98,3,2,'#3a281c');
+ R(225,55,34,24,'#0d0d14');R(227,57,30,19,'#0b1224');
+ if(dz||m==='sing'){for(let i=0;i<7;i++){const hh=2+Math.round((Math.sin(t*6+i*1.3)*.5+.5)*14);R(228+i*4,76-hh,3,hh,'hsl('+((i*50+t*120)%360)+',90%,60%)')}}else{R(229,59,8,1,'rgba(255,255,255,.3)');R(229,60,1,4,'rgba(255,255,255,.2)')}
+ R(58,110,14,4,'#d9564c');R(57,109,16,2,'#f07a6e');R(59,108,12,2,'#8a5a3a');
+ R(203,102,11,2,'#3a2a1c');R(208,66,2,36,'#3a2a1c');for(let i=0;i<9;i++){const w=8+i;R(209-(w>>1),58+i,w,1,i<2?'#fff1b8':'#ffd27a')}}
+function win(t,hr){const wm=(hr>=6&&hr<8||hr>=17&&hr<20)?.65:0,sc=i=>lerp(lerp(SKY.n[i],SKY.d[i],sk),SKY.w[i],wm*sk),c0=sc(0),c1=sc(1);
+ R(111,12,88,56,'#5b3d2a');b.save();b.beginPath();b.rect(114,15,82,50);b.clip();
+ for(let y=0;y<50;y+=3)R(114,15+y,82,3,css(lerp(c0,c1,y/50)));
+ const ma=Math.max(0,Math.min(1,1.3-sk*1.5)),sa=Math.max(0,Math.min(1,sk*1.5-.2));
+ if(ma>0){b.globalAlpha=ma;for(let i=0;i<22;i++)if(rm||Math.sin(t*2.2+i*1.7)>-.5)R(115+(i*37)%80,16+(i*23)%30,1+(i%7===0?1:0),1,'#fff');
+  ell(180,26,6,6,'#fff6c9');ell(183,24,5,5,css(lerp(c0,c1,.2)));b.globalAlpha=1}
+ if(sa>0){b.globalAlpha=sa;const sy=Math.round(64-26*sk);ell(134,sy,7,7,'#ffe27a');ell(134,sy,5,5,'#fff2a8');b.globalAlpha=1}
+ const bc=css(lerp(rgb('#1a2147'),rgb('#5a6a9a'),sk));
+ [[114,8,14],[124,10,22],[135,7,16],[143,12,26],[157,9,18],[167,11,12],[179,8,24],[188,9,15]].forEach(([x,w,h])=>{R(x,65-h,w,h,bc);
+  if(sk<.7){b.globalAlpha=1-sk/.7;for(let yy=65-h+3;yy<61;yy+=4)for(let xx=x+1;xx<x+w-1;xx+=3)if((xx*7+yy*3)%5<2)R(xx,yy,1,2,'#ffd86b');b.globalAlpha=1}});
+ b.restore();R(153,15,2,50,'#5b3d2a');R(114,38,82,2,'#5b3d2a');R(109,66,92,3,'#8a6347');R(109,66,92,1,'#a67c5a')}
+function poodle(t,f){const D='#1c1c27',L1='#3a3f66',H1='#8b94c4',N='#34344d',
+ pom=(x,y,s)=>{R(x+1,y,s-2,s,D);R(x,y+1,s,s-2,D);R(x+1,y+1,Math.max(1,s>>1),1,H1);R(x+1,y+2,1,1,L1)},
+ lie=PET.lying,ph=Math.floor(t*9)%2,w=Math.round(Math.sin(t*f.wag)*2);
+ if(lie){R(-15,-12,30,12,D);pom(-15,-17,8);pom(-6,-18,9);pom(3,-17,8);pom(-21+w,-10,6);pom(8,-7,7);pom(14,-6,7)}
+ else{[-12,-6,6,12].forEach((x,i)=>{const lf=PET.walk&&!rm?((i+ph)%2)*2:0;R(x,-10,3,10-lf,D);pom(x-1,-6-lf,5)});
+  R(-15,-23,29,14,D);R(-12,-24,22,1,D);pom(-15,-29,8);pom(-7,-30,8);pom(1,-29,8);pom(8,-25,9);R(-17,-26,3,4,D);pom(-22+w,-31-(w>0?1:0),6)}
+ const hx=lie?12:10,hy=f.hy,eo=Math.round(f.ear*2);
+ pom(hx-3,hy+3+eo,5);pom(hx-3,hy+8+eo,5);pom(hx,hy,12);pom(hx+1,hy-6,9);
+ R(hx+10,hy+5,6,6,N);R(hx+10,hy+5,4,1,'#4a4a68');R(hx+14,hy+5,2,2,'#050509');
+ if(f.open)R(hx+11,hy+9,4,1+Math.round(f.open*2),'#7a1f33');else R(hx+11,hy+10,4,1,'#f3d6df');
+ if(f.tongue||f.open)R(hx+12,hy+10+(f.open?1:0),2,2,'#ff7a98');
+ const ex=hx+6,ey=hy+4;
+ if(f.eyes==='closed')R(ex,ey+2,3,1,'#fff');else if(f.eyes==='happy'){R(ex,ey+2,1,1,'#fff');R(ex+1,ey+1,1,1,'#fff');R(ex+2,ey+2,1,1,'#fff')}else{R(ex,ey,3,3,'#e8eaff');R(ex+1,ey+1,2,2,'#06060a')}
+ if(f.sad)R(ex-1,ey-2,4,1,H1);b.globalAlpha=.6;R(hx+8,hy+8,2,1,'#ff7a98');b.globalAlpha=1}
+function cat(t,f){const B='#aab0c4',D='#6f7794',O='#343958',Pk='#ffaec0',lie=PET.lying,ph=Math.floor(t*9)%2;
+ for(let i=0;i<10;i++){const sx=Math.round(Math.sin(t*f.wag+i*.6)*i*.2);R((lie?-17:-15)-Math.round(i*.8)+sx,(lie?-5:-17)-i*(lie?.6:2),3,3,i>7?D:B)}
+ if(lie){R(-14,-11,28,11,B);R(-12,-12,24,1,B);[-8,-2,4].forEach(x=>R(x,-12,2,4,D))}
+ else{[-12,-7,6,11].forEach((x,i)=>{const lf=PET.walk&&!rm?((i+ph)%2)*2:0;R(x,-10,3,10-lf,B);R(x-1,-2-lf,5,2,'#cdd2e2')});
+  R(-14,-23,28,14,B);R(-12,-24,24,1,B);[-9,-3,3,9].forEach(x=>R(x,-23,2,5,D));R(-8,-12,16,3,'#cdd2e2')}
+ const hx=lie?12:10,hy=f.hy,fl=f.ear>.3?1:0;
+ [hx+1,hx+9].forEach(x=>{R(x,hy-3+fl,4,4,B);R(x+1,hy-5+fl,2,2,B);R(x+1,hy-2+fl,2,2,Pk)});
+ R(hx,hy,13,11,B);R(hx+1,hy+11,11,1,B);R(hx+1,hy-1,11,1,B);R(hx+5,hy,1,2,D);R(hx+8,hy,1,2,D);
+ const e=x=>{if(f.eyes==='closed')R(x,hy+5,3,1,O);else if(f.eyes==='happy'){R(x,hy+5,1,1,O);R(x+1,hy+4,1,1,O);R(x+2,hy+5,1,1,O)}else{R(x,hy+3,3,3,'#9fe870');R(x+1,hy+3,1,3,'#0a0a10')}};e(hx+2);e(hx+8);
+ R(hx+6,hy+6,2,1,Pk);if(f.open)R(hx+5,hy+8,3,1+Math.round(f.open*2),'#7a1f33');else{R(hx+5,hy+8,1,1,O);R(hx+7,hy+8,1,1,O)}
+ b.globalAlpha=.6;R(hx+1,hy+7,2,1,'#ff7a98');R(hx+10,hy+7,2,1,'#ff7a98');b.globalAlpha=1;
+ R(hx+13,hy+6,4,1,'#e8e8f4');R(hx+13,hy+8,3,1,'#e8e8f4');R(hx-3,hy+6,3,1,'#e8e8f4')}
+function lens(t){if(L.m==='off')return;const{x,y,rx,ry}=L,N=6;
+ for(let i=N;i>=1;i--){const k=i/N,z=LZ(k),ox=rm?0:Math.sin(t*1.5+i)*.8,sw=rx*2/SC/z,sh=ry*2/SC/z;
+  ctx.save();ctx.beginPath();ctx.ellipse(x,y,rx*k,ry*k,0,0,7);ctx.clip();ctx.drawImage(off,x/SC-sw/2+ox,y/SC-sh/2,sw,sh,x-rx,y-ry,rx*2,ry*2);ctx.restore()}
+ ctx.fillStyle='rgba(160,210,255,.07)';ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,7);ctx.fill();
+ ctx.lineWidth=9;ctx.strokeStyle='#10132b';ctx.stroke();
+ const g=ctx.createLinearGradient(x-rx,y-ry,x+rx,y+ry);g.addColorStop(0,'#fff');g.addColorStop(.35,'#9fe0ff');g.addColorStop(.7,'#5b6cff');g.addColorStop(1,'#ff9be8');
+ ctx.lineWidth=4;ctx.strokeStyle=g;ctx.stroke();
+ const a=rm?0:t*.6;ctx.lineWidth=2;ctx.strokeStyle='rgba(0,255,255,.55)';ctx.beginPath();ctx.ellipse(x,y,rx-5,ry-5,0,a+.9*Math.PI,a+1.5*Math.PI);ctx.stroke();
+ ctx.strokeStyle='rgba(255,60,200,.5)';ctx.beginPath();ctx.ellipse(x,y,rx-5,ry-5,0,a-.1*Math.PI,a+.5*Math.PI);ctx.stroke();
+ ctx.fillStyle='rgba(255,255,255,.5)';ctx.beginPath();ctx.ellipse(x-rx*.45,y-ry*.55,rx*.2,ry*.07,-.6,0,7);ctx.fill()}
+let T0=performance.now();
+function loop(now){requestAnimationFrame(loop);if(!S)return;const t=now/1000,dt=Math.min(.05,(now-T0)/1000);T0=now;
+ if(mode.n!=='idle'&&t>mode.u)mode={n:'idle',u:0};
+ const m=mode.n,sl=S.sleep,avg=(S.hun+S.ene+S.fun)/3,happy=m==='dance'||m==='pet'||m==='sing'||avg>70,sad=avg<35&&!sl,hr=new Date().getHours();
+ const f={eyes:(sl&&PET.lying)||(t%4.2<.14)?'closed':(m==='pet'||m==='dance'?'happy':'open'),wag:m==='wag'||m==='dance'?18:happy?11:sad?2.5:5,
+  dip:m==='eat'?Math.round(5+Math.abs(Math.sin(t*9))*3):0,ear:sad||sl?.55:m==='dance'?Math.sin(t*7)*.5:Math.sin(t*1.7)*.08,
+  open:m==='sing'?.5+.5*Math.abs(Math.sin(t*6)):0,tongue:S.sp==='dog'&&(m==='dance'||m==='pet'||(happy&&!sl)),sad};
+ sk+=(((sl||hr>=20||hr<6)?0:1)-sk)*Math.min(1,dt*(rm?9:.9));
+ let tx=PET.tx;if(sl||m==='dance')tx=150;else if(m==='eat')tx=84;else if(m!=='idle')tx=PET.x;
+ else if(t>PET.wt){PET.wt=t+3+Math.random()*4;if(!rm)tx=56+Math.random()*200}
+ PET.tx=tx;const d=tx-PET.x;PET.walk=Math.abs(d)>1.2;
+ if(PET.walk){PET.x+=Math.sign(d)*Math.min(Math.abs(d),(sl||m==='eat'?34:22)*dt);PET.dir=Math.sign(d)}
+ else if(m==='eat')PET.dir=-1;else if(m==='dance')PET.dir=Math.floor(t*2.2)%2?1:-1;else if(sl)PET.dir=1;
+ PET.lying=sl&&!PET.walk;
+ PET.y=FY+(m==='dance'&&!rm?-Math.round(Math.abs(Math.sin(t*7))*7):0)+(PET.walk&&!rm?-(Math.floor(t*9)%2):0);
+ f.hy=PET.lying?-16:-32+f.dip-(m==='sing'?3:0);PET.hx=PET.lying?18:16;PET.hy=f.hy+6;
+ if(m==='dance'&&t-lastBeat>.25){lastBeat=t;sfx.kick()}
+ if(m==='sing'&&t-lastNote>.4){lastNote=t;sfx.note(Math.floor(Math.random()*6));burst('♪',1,PET.x+PET.dir*14,PET.y-38,-70)}
+ if(m==='eat'&&!PET.walk&&Math.random()<.2)burst('•',1,64,108,-30);
+ if(PET.lying&&Math.random()<.02)burst('Z',1,PET.x+PET.dir*16,PET.y-20,-25);
+ b.imageSmoothingEnabled=false;room(t,m);
+ ell(Math.round(PET.x),FY+1,PET.lying?20:16,2,'rgba(0,0,0,.25)');
+ b.save();b.translate(Math.round(PET.x),Math.round(PET.y));b.scale(PET.dir,1);(S.sp==='dog'?poodle:cat)(t,f);b.restore();
+ const dk=(1-sk)*.5;if(dk>.01){b.fillStyle='rgba(8,12,46,'+dk.toFixed(3)+')';b.fillRect(0,0,W,H)}
+ if(m==='dance')for(let i=0;i<10;i++)R(8+i*32+Math.round(Math.sin(t*2+i)*4),6+(i%3)*5,3,3,'hsl('+((i*40+t*200)%360)+',90%,60%)');
+ win(t,hr);
+ const gl=.14+.2*(1-sk);for(let i=5;i>=1;i--){b.fillStyle='rgba(255,196,96,'+(gl*.2).toFixed(3)+')';ell(209,68,i*8,i*7,b.fillStyle)}
+ R(207,66,5,2,'#fff6c4');
+ parts=parts.filter(p=>(p.l-=dt)>0);parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;b.globalAlpha=Math.min(1,p.l);spr(p.t,Math.round(p.x),Math.round(p.y))});b.globalAlpha=1;
+ if(L.m==='auto'){const a=rm?0:1;L.x=480+Math.sin(t*.32)*340*a;L.y=190+Math.sin(t*.55)*50*a}
+ else if(L.m==='seguir'){const k=Math.min(1,dt*9);L.x+=(L.tx-L.x)*k;L.y+=(L.ty-L.y)*k}
+ L.x=Math.max(L.rx*.9,Math.min(cv.width-L.rx*.9,L.x));L.y=Math.max(L.ry*.9,Math.min(cv.height-L.ry*.9,L.y));
+ ctx.imageSmoothingEnabled=false;ctx.drawImage(off,0,0,W*SC,H*SC);lens(t)}
+/* ---------- Chat ---------- */
+const KB=[
+{k:/toxic|veneno|chocolate|uva|cebolla|ajo|prohib|no puede comer|xilitol|palta|aguacate|peligros/,h:1,dog:'Peligrosos para perros: chocolate, uvas y pasas, cebolla, ajo, xilitol (edulcorante de chicles), palta, nueces de macadamia, alcohol, café y huesos cocidos que se astillan. Si comió algo así, llamá a un veterinario enseguida.',cat:'Peligrosos para gatos: los lirios (muy tóxicos), cebolla, ajo, chocolate, uvas y pasas, xilitol, alcohol y café. Averiguá si tus plantas de interior son seguras antes de tenerlas.'},
+{k:/com(e|er|ida|o)\b|alimen|croqueta|pienso|dieta|hambre|racion/,dog:'Los perros adultos suelen comer 2 veces al día. Elegí un alimento balanceado según edad y tamaño, agua fresca siempre, y que los premios no pasen del 10 % de la comida diaria. Evitá las sobras de la mesa.',cat:'Los gatos son carnívoros estrictos: necesitan proteína animal (incluida taurina). Combiná húmedo y seco para que tomen más agua, repartí varias comidas chicas y poné el agua lejos del plato.'},
+{k:/lenguaje|cola|mueve|orejas|ronron|bostez|gru[nñ]|bufa|amasa|parpade|que me dice|se siente/,dog:'La cola en movimiento no siempre es alegría: importan la altura y la velocidad. Cuerpo suelto y reverencia = ¡a jugar! Orejas atrás, bostezos, lamerse el hocico o mostrar el blanco del ojo = estrés. Respetá esas señales.',cat:'Parpadeo lento = confianza. Cola en alto = saludo contento. Orejas aplastadas o cola esponjada = miedo o enojo. El ronroneo suele ser bienestar, pero también puede darse por dolor o estrés. Amasar con las patitas es cariño y confort.'},
+{k:/dorm|sueno|siesta|cama|descans/,dog:'Un perro adulto duerme unas 12 a 14 horas al día y los cachorros más. Una cama tranquila y una rutina fija ayudan a que descanse bien.',cat:'Los gatos duermen entre 12 y 16 horas al día. Son crepusculares: más activos al amanecer y al atardecer.'},
+{k:/jug|juguete|aburr|ejercicio|pase|energia/,dog:'Combiná paseos con juegos de olfato (esconder premios), buscar la pelota y trucos cortos. Un perro aburrido puede ladrar o destrozar cosas. Los caniches son muy inteligentes: ¡aman los desafíos mentales!',cat:'Jugá 10 a 15 minutos, un par de veces al día, con una caña con plumas imitando una presa: acechar, saltar, atrapar y premio. Rascadores y lugares altos los hacen sentir seguros.'},
+{k:/convive|otro perro|otro gato|nino|bebe|present|adapta|mudanza|hermano/,all:'Las presentaciones deben ser graduales: primero olores (una manta), luego verse a distancia y recién después encontrarse, con premios y paciencia. Cada animal necesita su espacio, su comida y su descanso.',cat:'En gatos ayuda empezar con un cuarto base y tener camas, areneros y comederos separados para evitar peleas.'},
+{k:/bano|banar|pelo|pelaje|cepill|peluquer|unas|dientes|limpi|arenero|higiene/,dog:'Caniche: cepillado frecuente para evitar nudos y corte cada 4 a 6 semanas. Bañalo con shampoo para perros cuando haga falta, secalo bien y cuidá uñas y dientes.',cat:'Los gatos se acicalan solos, pero cepillarlos reduce las bolas de pelo. Limpiá el arenero a diario, cortá las uñas con cuidado y acostumbralos de a poco al cepillado de dientes.'},
+{k:/vacuna|enferm|vomit|diarrea|veterinari|castra|pulga|garrapata|desparasit|dolor|salud|golpe/,h:1,all:'Lo básico: vacunas y desparasitación al día, control veterinario anual y esterilización según indique tu veterinario. Vómitos repetidos, diarrea con sangre, no comer por más de un día o dificultad para respirar son motivos de consulta urgente.'},
+{k:/ladr|aull|maull|ruido|vocal/,dog:'Los perros ladran por alerta, juego, aburrimiento o ansiedad. Ejercicio, rutina y premiar la calma funcionan mejor que retar.',cat:'Los gatos maúllan sobre todo para comunicarse con las personas: piden comida, atención o se quejan. Si maúllan de noche, más juego antes de dormir suele ayudar.'},
+{k:/entren|ensen|truco|educar|sentarse|portar|pis\b/,dog:'Premios chicos al instante, sesiones de 5 minutos y mucha paciencia. Reforzar lo que hace bien funciona mucho mejor que el castigo.',cat:'Los gatos aprenden con refuerzo positivo y clicker: premiá apenas hagan lo deseado. Nunca los castigues, solo los asusta.'},
+{k:/curiosidad|sabias|dato|interesante|cuentame/,dog:'Dato: los caniches fueron perros cobradores de agua; el corte con pompones protegía articulaciones y órganos en el agua fría. ¡Y están entre los perros más inteligentes!',cat:'Dato: los bigotes detectan cambios en el aire y ayudan a medir espacios. ¡Y los gatos no perciben el sabor dulce!'},
+{k:/ayuda|como juego|monedas|estrellas|que puedo|controles/,all:'Tocá mi cabeza, panza o cola, dame de comer, hacé que baile o cante y ganás estrellas ⭐ para comidas más ricas. También podés preguntarme sobre perros y gatos.'},
+{k:/hola|buenas|que tal|como estas|como andas/,all:'¡Qué alegría verte! Estoy con hambre %h, energía %e y felicidad %f. ¿Jugamos o charlamos?'}];
+const CHIPS=['¿Qué comidas son tóxicas?','¿Qué significa mover la cola?','¿Cuánto duermen?','¿Cómo juego con mi mascota?','Dame una curiosidad','¿Cómo los presento a otro animal?'];
+const PRE={dog:['¡Guau! ','*mueve la cola* ','Ruff, ruff. '],cat:['Miau~ ','*parpadea lento* ','Prrr… ']};
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function local(q){const n=norm(q);let sp=S.sp;if(/\bgat/.test(n)&&!/perr|canich/.test(n))sp='cat';else if(/perr|canich/.test(n)&&!/\bgat/.test(n))sp='dog';
+ for(const e of KB)if(e.k.test(n)){let a=(sp==='cat'?e.cat:e.dog)||e.all||e.dog||e.cat;if(e.all&&e[sp]&&e.k.source.indexOf('convive')>-1)a=e.all+' '+e[sp];
+  a=a.replace('%h',S.hun<35?'bajo':'bien').replace('%e',S.ene<35?'baja':'buena').replace('%f',S.fun<35?'baja':'alta');return a+(e.h?'\n🩺 Ante una urgencia o duda médica, consultá a un veterinario.':'')}
+ return 'Mmm… eso no lo sé bien. Probá preguntarme sobre comida, lenguaje corporal, sueño, juego, higiene o curiosidades de perros y gatos.'}
+function add(r,t,keep){const d=document.createElement('div');d.className='m '+r;d.textContent=t;$('#msgs').appendChild(d);$('#msgs').scrollTop=1e5;if(keep!==false){S.hist.push({r,t});S.hist=S.hist.slice(-30);save()}}
+function msgs(){$('#msgs').innerHTML='';S.hist.forEach(h=>add(h.r,h.t,false));if(!S.hist.length)add('p',PRE[S.sp][0]+'¡Hola! Soy '+S.name+'. Preguntame lo que quieras sobre perros y gatos.');
+ $('#chips').innerHTML=CHIPS.map(c=>`<button type="button">${c}</button>`).join('')}
+async function ask(q){q=q.trim();if(!q)return;add('u',q);sfx.click();let a;const c=S.cfg||{};
+ if(c.u){try{const r=await fetch(c.u,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+c.k},body:JSON.stringify({model:c.m,messages:[{role:'system',content:'Sos '+S.name+', '+SP()[S.g==='f'?1:0].toLowerCase()+(S.sp==='dog'?' caniche negro':'')+' virtual simpátic'+A()+'. Respondé en español, breve y en personaje, sobre perros y gatos. Ante temas médicos recordá consultar al veterinario.'},...S.hist.slice(-8).map(h=>({role:h.r==='u'?'user':'assistant',content:h.t}))]})});const j=await r.json();a=j.choices[0].message.content}catch(e){a=null}}
+ setTimeout(()=>{add('p',(a||PRE[S.sp][Math.floor(Math.random()*3)]+local(q)));sfx.voice();S.bond=cl(S.bond+.5);ui()},a?0:450)}
+/* ---------- Setup y eventos ---------- */
+let pick={sp:'dog',g:'f'};
+function setupUI(){document.querySelectorAll('#spRow button').forEach(b=>b.classList.toggle('on',b.dataset.sp===pick.sp));
+ const l=pick.sp==='dog'?['Perro','Perra']:['Gato','Gata'];const gb=document.querySelectorAll('#gRow button');gb[0].textContent=l[0];gb[1].textContent=l[1];gb.forEach(b=>b.classList.toggle('on',b.dataset.g===pick.g));$('#nm').placeholder='Nombre (ej. '+NAMES[pick.sp][pick.g]+')'}
+function openSetup(){$('#setup').hidden=false;$('#cancel').hidden=!S;setupUI()}
+$('#spRow').onclick=e=>{const b=e.target.closest('button');if(b){pick.sp=b.dataset.sp;sfx.click();setupUI()}};
+$('#gRow').onclick=e=>{const b=e.target.closest('button');if(b){pick.g=b.dataset.g;sfx.click();setupUI()}};
+$('#go').onclick=()=>{ac();newPet(pick.sp,pick.g,$('#nm').value.trim());$('#setup').hidden=true;sfx.voice()};
+$('#cancel').onclick=()=>$('#setup').hidden=true;
+$('#newp').onclick=openSetup;
+const openInfo=()=>{$('#info').hidden=false;$('#info').scrollTop=0;sfx.click()},closeInfo=()=>{$('#info').hidden=true};
+$('#infob').onclick=openInfo;$('#infob2').onclick=openInfo;$('#iclose').onclick=closeInfo;
+$('#pcopy').onclick=()=>{const t=$('#ptxt'),ok=()=>{$('#pcopy').textContent='✅ ¡Copiado!';setTimeout(()=>$('#pcopy').textContent='📋 Copiar prompt',2000)};
+ const fb=()=>{t.select();try{document.execCommand('copy')&&ok()}catch(e){}};
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t.value).then(ok,fb);else fb()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#info').hidden)closeInfo()});
+$('#rst').onclick=()=>{if(confirm('¿Reiniciar todo el juego? Se borran mascota, estrellas y chat.')){try{localStorage.removeItem(KEY)}catch(e){}S=null;parts=[];openSetup()}};
+$('#mute').onclick=()=>{muted=!muted;try{localStorage.setItem(KEY+'m',muted?'1':'0')}catch(e){}ac();ui()};
+$('#acts').onclick=e=>{const b=e.target.closest('button');if(!b)return;ac();sfx.click();({eat:showFoods,sleep:sleepT,dance,sing})[b.dataset.a]()};
+$('#foods').onclick=e=>{const b=e.target.closest('button');if(b)feed(+b.dataset.f)};
+$('#chips').onclick=e=>{if(e.target.tagName==='BUTTON')ask(e.target.textContent)};
+$('#cf').onsubmit=e=>{e.preventDefault();ac();const i=$('#ci');ask(i.value);i.value=''};
+['au:u','ak:k','am:m'].forEach(p=>{const[id,k]=p.split(':'),el=$('#'+id);el.oninput=()=>{S.cfg=S.cfg||{};S.cfg[k]=el.value.trim();save()}});
+const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
+const inLens=(x,y)=>L.m!=='off'&&((x-L.x)/L.rx)**2+((y-L.y)/L.ry)**2<=1;
+function unlens(x,y){if(!inLens(x,y))return[x,y];const k=Math.ceil(Math.hypot((x-L.x)/L.rx,(y-L.y)/L.ry)*6)/6||1/6,z=LZ(k);return[L.x+(x-L.x)/z,L.y+(y-L.y)/z]}
+let dr=null;
+cv.addEventListener('pointerdown',e=>{if(!S)return;ac();const[x,y]=pos(e);dr={x,y,lens:inLens(x,y),moved:false,ox:L.x-x,oy:L.y-y};try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+cv.addEventListener('pointermove',e=>{const[x,y]=pos(e);cv.style.cursor=inLens(x,y)?'grab':'';
+ if(dr&&dr.lens&&(dr.moved||Math.hypot(x-dr.x,y-dr.y)>8)){dr.moved=true;if(L.m==='auto')setLens('pausa');L.x=x+dr.ox;L.y=y+dr.oy;L.tx=L.x;L.ty=L.y}
+ else if(L.m==='seguir'&&(!dr||!dr.lens)){L.tx=x;L.ty=y}});
+cv.addEventListener('pointerup',()=>{if(dr&&!dr.moved&&S){const[x,y]=unlens(dr.x,dr.y);touch(x/SC,y/SC)}dr=null});
+cv.addEventListener('pointercancel',()=>{dr=null});
+$('#lensb').onclick=()=>{L.tx=L.x;L.ty=L.y;setLens(LMODES[(LMODES.indexOf(L.m)+1)%4])};setLens('auto');
+document.addEventListener('keydown',e=>{if(!S||e.target.tagName==='INPUT'||!$('#setup').hidden||!$('#info').hidden)return;const k=e.key.toLowerCase();ac();if(k==='c')showFoods();else if(k==='s')sleepT();else if(k==='b')dance();else if(k==='n')sing();else if(k==='l')$('#lensb').click()});
+/* ---------- Inicio ---------- */
+if(S&&S.sp){const c=S.cfg||{};$('#au').value=c.u||'';$('#ak').value=c.k||'';$('#am').value=c.m||'';
+ S.hun=cl(S.hun);S.ene=cl(S.ene);S.fun=cl(S.fun);S.hist=S.hist||[];msgs();ui();say('¡Volviste! '+S.name+' te extrañaba 💛',3000)}else{S=null;openSetup()}
+setInterval(tick,1000);requestAnimationFrame(loop);
+</script></body></html>
